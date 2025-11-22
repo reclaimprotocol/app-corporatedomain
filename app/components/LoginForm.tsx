@@ -41,9 +41,12 @@ export default function LoginForm({ onOtpSent }: LoginFormProps) {
 
   return (
     <div className="w-full max-w-md p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-lg">
-      <h1 className="text-2xl font-bold mb-6 text-center text-zinc-900 dark:text-white">
+      <h1 className="text-2xl font-bold mb-4 text-center text-zinc-900 dark:text-white">
         Login
       </h1>
+      <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-center">
+        Login to verify the actual company to whom the an email address belongs
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

@@ -144,14 +144,13 @@ export async function POST(request: NextRequest) {
     console.log("Company:", company);
 
     // Update user in database
-    const user = await userDb.getUserByEmail(email);
+    let user = await userDb.getUserByEmail(email);
     console.log("User:", user);
 
+    // If user doesn't exist, create them
     if (!user) {
-      return NextResponse.json({
-        success: false,
-        error: 'User not found'
-      }, { status: 404 });
+      console.log("User not found, creating new user:", email);
+      user = await userDb.upsertUser(email);
     }
 
     await userDb.updateUserData(email, company, proofs);

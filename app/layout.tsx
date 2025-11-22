@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OTP Authentication App",
-  description: "Email OTP authentication using Twilio",
+  title: "Corporate Domain Name Verification",
+  description: "Verify the actual company to whom an email address belongs",
 };
 
 export default function RootLayout({

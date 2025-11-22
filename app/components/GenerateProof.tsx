@@ -199,8 +199,11 @@ export default function GenerateProof({ email }: GenerateProofProps) {
           <h1 className="text-2xl font-bold mb-4 text-zinc-900 dark:text-white text-center">
             Select Your Country
           </h1>
-          <p className="text-zinc-600 dark:text-zinc-400 mb-6 text-center">
+          <p className="text-zinc-600 dark:text-zinc-400 mb-2 text-center">
             Choose your employer's country to verify employment
+          </p>
+          <p className="text-zinc-500 dark:text-zinc-500 mb-6 text-center text-sm">
+            You must verify your employer before you can see other user's employer
           </p>
 
           <div className="mb-4">
@@ -238,7 +241,7 @@ export default function GenerateProof({ email }: GenerateProofProps) {
         <>
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
-              Select Provider
+              Choose how you want to verify your employer
             </h1>
             <button
               onClick={() => setSelectedCountry(null)}
