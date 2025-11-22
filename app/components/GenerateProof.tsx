@@ -105,15 +105,52 @@ export default function GenerateProof({ email }: GenerateProofProps) {
 
       // Listen for results
       await reclaimProofRequest.startSession({
-        onSuccess: (proofs: any) => {
+        onSuccess: async (proofs: any) => {
           console.log('Verification successful:', proofs);
           setIsVerifying(false);
           setProof(proofs);
-          setMessage({ type: 'success', text: 'Verification successful! Redirecting...' });
-          // Reload the page to show domain verification
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
+          setMessage({ type: 'success', text: 'Verification successful! Processing...' });
+
+          // Poll for updated user data (callback takes time to process)
+          let attempts = 0;
+          const maxAttempts = 10;
+          const pollInterval = 2000; // 2 seconds
+
+          const checkUserData = async () => {
+            try {
+              const response = await fetch(`/api/user?email=${encodeURIComponent(email)}`);
+              const data = await response.json();
+
+              if (data.user?.employer && data.user?.proof) {
+                // Data updated successfully
+                setMessage({ type: 'success', text: 'Verification complete! Redirecting...' });
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+                return true;
+              }
+              return false;
+            } catch (error) {
+              console.error('Error checking user data:', error);
+              return false;
+            }
+          };
+
+          const poll = setInterval(async () => {
+            attempts++;
+            const success = await checkUserData();
+
+            if (success || attempts >= maxAttempts) {
+              clearInterval(poll);
+              if (!success) {
+                // Fallback: just reload after max attempts
+                setMessage({ type: 'success', text: 'Verification complete! Redirecting...' });
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
+              }
+            }
+          }, pollInterval);
         },
         onError: (error: Error) => {
           console.error('Verification failed:', error);
