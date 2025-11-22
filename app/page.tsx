@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useAuth } from './context/AuthContext';
 import LoginForm from './components/LoginForm';
 import OtpVerification from './components/OtpVerification';
@@ -15,7 +15,7 @@ interface UserData {
   proof: object | null;
 }
 
-export default function Home() {
+function HomeContent() {
   const { token, email, login, logout, isLoading } = useAuth();
   const searchParams = useSearchParams();
   const forceReverify = searchParams.get('reverify') === 'true';
@@ -142,5 +142,17 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
       <GenerateProof email={email!} />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+        <div className="text-zinc-600 dark:text-zinc-400">Loading...</div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   );
 }
