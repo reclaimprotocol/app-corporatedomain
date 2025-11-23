@@ -17,32 +17,28 @@ export async function POST(request: NextRequest) {
 
     const token = authHeader.substring(7);
 
-    // Get email, country, and provider from body
-    const { email, country, provider } = await request.json();
-
-    if (!email || !country || !provider) {
-      return NextResponse.json(
-        { error: 'Email, country, and provider are required' },
-        { status: 400 }
-      );
-    }
-
-    // Verify JWT token
+    // Verify JWT token and extract email
+    let email: string;
     try {
       const { payload } = await jwtVerify(token, jwtSecret);
-
-      // Check if token email matches provided email
-      if (payload.email !== email) {
-        return NextResponse.json(
-          { error: 'Unauthorized: Token does not match email' },
-          { status: 403 }
-        );
-      }
+      email = payload.email as string;
+      console.log("Authenticated user from token:", email);
     } catch (error) {
       console.error('JWT verification failed:', error);
       return NextResponse.json(
         { error: 'Unauthorized: Invalid token' },
         { status: 401 }
+      );
+    }
+
+    // Get country and provider from body
+    const { country, provider } = await request.json();
+    console.log("Received config request for:", { email, country, provider });
+
+    if (!country || !provider) {
+      return NextResponse.json(
+        { error: 'Country and provider are required' },
+        { status: 400 }
       );
     }
     // Initialize SDK with server-side environment variables (secure)

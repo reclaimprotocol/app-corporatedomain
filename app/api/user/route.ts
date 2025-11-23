@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     const user = await userDb.getUserByEmail(email);
+    console.log("User:", user);
 
     if (!user) {
       return NextResponse.json(

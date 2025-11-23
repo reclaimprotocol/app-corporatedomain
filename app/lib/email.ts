@@ -61,7 +61,7 @@ export function createDomainNotLinkedEmail(
 ): { subject: string; html: string; text: string } {
   const searchedDomain = searchedEmail.split('@')[1];
 
-  const subject = `Verify your ${searchedDomain} domain for better email deliverability`;
+  const subject = `Action Needed: Domain Verification for ${searchedDomain}`;
 
   const html = `
 <!DOCTYPE html>
@@ -86,31 +86,34 @@ export function createDomainNotLinkedEmail(
 <body>
   <div class="container">
     <div class="header">
-      <h1>Domain Verification Available</h1>
+      <h1>Action Needed: Domain Verification for ${searchedDomain}</h1>
     </div>
     <div class="content">
-      <p>Hello,</p>
-      <p>Someone with a <strong>@${searcherDomain}</strong> email address recently searched for your email address.</p>
+      <p>Hi,</p>
+      <p>A user from <strong>${searcherDomain}</strong> searched for your email address on our corporate domain verification platform.</p>
 
       <div class="highlight">
-        <strong>Your ${searchedDomain} domain is not yet verified.</strong><br>
-        Verifying your domain can improve email deliverability for your entire organization.
+        <strong>Your company domain (${searchedDomain}) is not verified yet.</strong><br>
+        You can be the first person to link this domain to your employer.
       </div>
 
-      <p>By verifying your domain, you can:</p>
+      <p>What is this?</p>
+      <p>Reclaim Protocol's Corporate Domain Verification allows professionals to verify which company they work for. When you verify your domain, anyone searching for ${searchedDomain} addresses will see your verified employer information.</p>
+
+      <p>Benefits:</p>
       <ul>
-        <li>Improve email authentication and deliverability</li>
-        <li>Help others identify legitimate emails from your organization</li>
-        <li>Link your email to your company for better verification</li>
+        <li>Link your corporate email to your employer</li>
+        <li>Help colleagues verify your company affiliation</li>
+        <li>Increase trust in business communications</li>
       </ul>
 
       <div class="cta-container">
-        <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}" class="cta" style="color: #ffffff; text-decoration: none;">Verify Domain Now</a>
+        <a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}" class="cta" style="color: #ffffff; text-decoration: none;">Verify Your Domain</a>
       </div>
     </div>
     <div class="footer">
-      <p>This is an automated notification. If you have questions, please contact support.</p>
-      <p><a href="${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}">Visit our website</a></p>
+      <p>Sent by Reclaim Protocol. This is a one-time notification.</p>
+      <p><a href="https://reclaimprotocol.org">Learn more about Reclaim Protocol</a></p>
     </div>
   </div>
 </body>
@@ -118,22 +121,26 @@ export function createDomainNotLinkedEmail(
   `;
 
   const text = `
-Domain Verification Available
+Action Needed: Domain Verification for ${searchedDomain}
 
-Hello,
+Hi,
 
-Someone with a @${searcherDomain} email address recently searched for your email address.
+A user from ${searcherDomain} searched for your email address on our corporate domain verification platform.
 
-Your ${searchedDomain} domain is not yet verified. Verifying your domain can improve email deliverability for your entire organization.
+Your company domain (${searchedDomain}) is not verified yet. You can be the first person to link this domain to your employer.
 
-By verifying your domain, you can:
-- Improve email authentication and deliverability
-- Help others identify legitimate emails from your organization
-- Link your email to your company for better verification
+What is this?
+Reclaim Protocol's Corporate Domain Verification allows professionals to verify which company they work for. When you verify your domain, anyone searching for ${searchedDomain} addresses will see your verified employer information.
 
-Verify your domain now: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}
+Benefits:
+- Link your corporate email to your employer
+- Help colleagues verify your company affiliation
+- Increase trust in business communications
 
-This is an automated notification. If you have questions, please contact support.
+Verify your domain: ${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}
+
+Sent by Reclaim Protocol. This is a one-time notification.
+Learn more: https://reclaimprotocol.org
   `.trim();
 
   return { subject, html, text };

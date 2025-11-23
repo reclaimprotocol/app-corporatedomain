@@ -34,14 +34,16 @@ export async function POST(request: NextRequest) {
     }
     
     const proof = Array.isArray(proofs) ? proofs[0] : proofs;
+    console.log("=== CALLBACK START ===");
     console.log("Proof:", proof);
 
     let context = JSON.parse(proof.claimData.context);
     let email = context.contextAddress;
     let contextMessage = context.contextMessage;
 
-    console.log("Email:", email);
+    console.log("Email from context:", email);
     console.log("ContextMessage:", contextMessage);
+    console.log("ExtractedParameters:", context.extractedParameters);
 
     // Parse contextMessage to get country and provider
     let contextData;
@@ -97,7 +99,10 @@ export async function POST(request: NextRequest) {
 
     // Get the jsonPath from provider config
     const jsonPath = (providerConfig as any).jsonPath;
+    console.log("JsonPath from provider config:", jsonPath);
+
     if (!jsonPath) {
+      console.error("ERROR: Provider config missing jsonPath!");
       return NextResponse.json({
         success: false,
         error: 'Unable to verify your company - provider configuration missing jsonPath'
@@ -132,28 +137,38 @@ export async function POST(request: NextRequest) {
 
     // Apply jsonPath to extractedParameters
     const extractedParameters = context.extractedParameters;
+    console.log("Attempting to extract company from extractedParameters:", extractedParameters);
+    console.log("Using jsonPath:", jsonPath);
+
     const company = resolveJsonPath(extractedParameters, jsonPath);
+    console.log("Extracted company value:", company);
 
     if (!company) {
+      console.error("ERROR: Company not found at jsonPath:", jsonPath);
+      console.error("ExtractedParameters was:", JSON.stringify(extractedParameters));
       return NextResponse.json({
         success: false,
         error: 'Unable to verify your company - company information not found in proof'
       }, { status: 400 });
     }
 
-    console.log("Company:", company);
+    console.log("Successfully extracted company:", company);
 
     // Update user in database
     let user = await userDb.getUserByEmail(email);
-    console.log("User:", user);
+    console.log("User before update:", user);
 
     // If user doesn't exist, create them
     if (!user) {
       console.log("User not found, creating new user:", email);
       user = await userDb.upsertUser(email);
+      console.log("User created:", user);
     }
 
-    await userDb.updateUserData(email, company, proofs);
+    const updatedUser = await userDb.updateUserData(email, company, proofs);
+    console.log("User after update:", updatedUser);
+    console.log("Updated with employer:", company, "and proof exists:", !!proofs);
+    console.log("=== CALLBACK SUCCESS ===");
 
     return NextResponse.json({
       success: true,
@@ -162,7 +177,9 @@ export async function POST(request: NextRequest) {
       proofs
     });
   } catch (error) {
+    console.error('=== CALLBACK ERROR ===');
     console.error('Error processing callback:', error);
+    console.error('Error stack:', (error as Error).stack);
     return NextResponse.json(
       {
         success: false,

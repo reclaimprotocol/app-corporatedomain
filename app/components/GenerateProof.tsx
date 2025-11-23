@@ -74,7 +74,7 @@ export default function GenerateProof({ email }: GenerateProofProps) {
       setIsVerifying(true);
       setMessage(null);
 
-      // Fetch config from our API route with email, country, provider and auth token
+      // Fetch config from our API route with country, provider and auth token (email extracted from token)
       const response = await fetch('/api/reclaim/config', {
         method: 'POST',
         headers: {
@@ -82,7 +82,6 @@ export default function GenerateProof({ email }: GenerateProofProps) {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          email,
           country: selectedCountry,
           provider: selectedProvider,
         }),
@@ -113,22 +112,27 @@ export default function GenerateProof({ email }: GenerateProofProps) {
 
           // Poll for updated user data (callback takes time to process)
           let attempts = 0;
-          const maxAttempts = 10;
+          const maxAttempts = 20; // Increased from 10 to 20
           const pollInterval = 2000; // 2 seconds
 
           const checkUserData = async () => {
             try {
+              console.log(`Polling attempt ${attempts + 1}/${maxAttempts}`);
               const response = await fetch(`/api/user?email=${encodeURIComponent(email)}`);
               const data = await response.json();
 
+              console.log('User data from poll:', data.user);
+
               if (data.user?.employer && data.user?.proof) {
                 // Data updated successfully
+                console.log('Employer and proof found! Redirecting...');
                 setMessage({ type: 'success', text: 'Verification complete! Redirecting...' });
                 setTimeout(() => {
                   window.location.reload();
                 }, 1000);
                 return true;
               }
+              console.log('Employer or proof not found yet, will retry...');
               return false;
             } catch (error) {
               console.error('Error checking user data:', error);
@@ -144,6 +148,7 @@ export default function GenerateProof({ email }: GenerateProofProps) {
               clearInterval(poll);
               if (!success) {
                 // Fallback: just reload after max attempts
+                console.warn('Max polling attempts reached, reloading anyway...');
                 setMessage({ type: 'success', text: 'Verification complete! Redirecting...' });
                 setTimeout(() => {
                   window.location.reload();

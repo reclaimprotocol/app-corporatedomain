@@ -85,6 +85,28 @@ function HomeContent() {
     );
   }
 
+  // Header component for logged in users
+  const Header = () => (
+    <div className="w-full bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          Corporate Domain Verification
+        </h2>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            {email}
+          </span>
+          <button
+            onClick={logout}
+            className="px-4 py-2 text-sm bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-100 font-medium rounded-md transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const handleUpdateEmployer = async () => {
     if (!confirm('Are you sure you want to update your employer? This will delete your current data and log you out.')) {
       return;
@@ -113,25 +135,26 @@ function HomeContent() {
   console.log("User data:", userData);
   if (userData?.employer && userData?.proof && !forceReverify) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4">
-        <div className="w-full max-w-4xl space-y-6">
-          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Logged in as</p>
-                <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{email}</p>
-                <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">Current employer</p>
-                <p className="text-lg font-medium text-zinc-900 dark:text-zinc-100">{userData.employer}</p>
+      <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+        <Header />
+        <div className="flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl space-y-6 mt-6">
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-800 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-1">Current employer</p>
+                  <p className="text-lg font-medium text-zinc-900 dark:text-zinc-100">{userData.employer}</p>
+                </div>
+                <button
+                  onClick={handleUpdateEmployer}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
+                >
+                  Update
+                </button>
               </div>
-              <button
-                onClick={handleUpdateEmployer}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors"
-              >
-                Update
-              </button>
             </div>
+            <DomainVerification email={email!} />
           </div>
-          <DomainVerification email={email!} />
         </div>
       </div>
     );
@@ -139,8 +162,11 @@ function HomeContent() {
 
   // Otherwise show Generate Proof page (for new users, users without proof, or forced reverify)
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-      <GenerateProof email={email!} />
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <Header />
+      <div className="flex items-center justify-center p-4">
+        <GenerateProof email={email!} />
+      </div>
     </div>
   );
 }
