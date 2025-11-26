@@ -183,12 +183,12 @@
   "United Arab Emirates": {},
   "United Kingdom": {},
   "United States": {
-    "IRS": {
-      "id": "irs",
-      "name": "IRS",
-      "logoUrl": "https://example.com/irs-logo.png",
-      "jsonPath": "/api/reclaim/irs",
-      "active": false
+    "SSA": {
+      "id": "d09a9f99-5fd3-4f57-80d6-0aa67d4b68b7",
+      "name": "SSA",
+      "logoUrl": "https://devtool-images.s3.ap-south-1.amazonaws.com/http-provider-brand-logos/ssa.gov-219cfad7-0680-4831-bd35-5a034a127079.png",
+      "jsonPath": "name",
+      "active": true
     }
   },
   "Uruguay": {},
